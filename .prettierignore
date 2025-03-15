@@ -1,0 +1,10 @@
+# files in which i dont want to imprt prettier
+# can do these file things like can generate them! 
+
+*.env
+.env
+.env.*
+
+/node_modules
+/distribution
+/.vscode 
