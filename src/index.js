@@ -12,6 +12,16 @@ dotenv.config({
 //in our scripts in package.json we can load all our cofiguration of dotenv by experimental fetaure using! 
 
 connectDB()
+.then(() => {
+    app.listen(process.env.PORT || 8000, () => {
+        console.log(`server is running on port: ${process.env.PORT}`);
+    })
+})//to define what to do once gets connected to DB
+.catch((err) => {
+    console.log("mongo db connecction faiuled!", err);
+    
+})
+//request.params and request.body are  the two express requests which will be studied the most! 
 
 
 
