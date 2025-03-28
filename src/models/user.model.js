@@ -99,3 +99,4 @@ export const User = mongoose.model("User", userSchema);
 // export const User = mongoose.model.apply("User", userSchema)
 //direct encryption is not possible so we need some middleware of mongoose using a Pre middleware
 //it runs just before the data is taken or imported! 
+// so yeah this was db connecting 
