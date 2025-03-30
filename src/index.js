@@ -4,6 +4,7 @@
 
 import dotenv from "dotenv"
 import connectDB from "./db/index.js";
+import { app } from "./app.js";
 
 dotenv.config({
     path: './env'
@@ -19,7 +20,6 @@ connectDB()
 })//to define what to do once gets connected to DB
 .catch((err) => {
     console.log("mongo db connecction faiuled!", err);
-    
 })
 //request.params and request.body are  the two express requests which will be studied the most! 
 

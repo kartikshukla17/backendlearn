@@ -94,7 +94,8 @@ userSchema.method.generateRefreshToken = function(){
     )
 } //gets refreshed baar baar 
 
-export const User = mongoose.model("User", userSchema);
+export const User = mongoose.model("User", userSchema); //this can directly contact with the database!
+//this will only call mongodb on my behalf! 
 
 // export const User = mongoose.model.apply("User", userSchema)
 //direct encryption is not possible so we need some middleware of mongoose using a Pre middleware

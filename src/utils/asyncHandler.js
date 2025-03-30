@@ -5,8 +5,6 @@ const asyncHandler = (requestHandler) => {
     }
 }
 
-
-
 export {asyncHandler}
 
 // here we are using promises as async handler though can use try and catch as well!

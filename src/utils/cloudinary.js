@@ -22,3 +22,4 @@ const uploadOnCloudinary = async (localFilePath) => {
         fs.unlinkSync(localFilePath)//local saved temp file as upload operation got failed
     }
 }  
+export {uploadOnCloudinary}
