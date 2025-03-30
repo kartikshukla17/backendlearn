@@ -100,3 +100,9 @@ export const User = mongoose.model("User", userSchema);
 //direct encryption is not possible so we need some middleware of mongoose using a Pre middleware
 //it runs just before the data is taken or imported! 
 // so yeah this was db connecting 
+
+//to upload on cloudnary our strategy is: multer k through upload krvyenge and will keep it in local storage 
+//then will take from local storage and put in cloud so that file can be reuploaded and reattempted to upload on cloud thats why local server first 
+
+
+

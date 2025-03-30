@@ -24,4 +24,4 @@ export { app }
 //once a url is hit a request and response (proffesuonally toh it is err,req,res,next!) is handled but i want to do various checkings also on that request can see the diagram in notes! 
 //to do that checking we use middleware! which does that checking things! 
 //a common practice is since say in db a lot of time we interact and use try catch a lot of times so what we can do is we can make it as a utilitya dn then use it to do the interactuion baar baaar hence making the utility file st a sungle spcae!
- 
+  
