@@ -18,6 +18,16 @@ app.use(express.static("public")) //to use any files or folder or images jo aaye
 //cookie parser is used to access the user's browser and send data to the user! and on those cookies i will perform crud operations cause some cookies can be read by server only!
 
 
+//routes import: generally ese hi its imported cause better segregation
+import userRouter from './routes/user.routes.js'
+
+
+//routes declaration 
+//here cant use app.get cause usme we were writing same mai hi routes and same mai hi controller 
+app.use("/api/v1/users", userRouter) //jese hi if someone writes /users will get access of userRouter! 
+
+
+//http://localhost:800/api/v1/users/register ese the url comes then! 
 export { app }
 
 
