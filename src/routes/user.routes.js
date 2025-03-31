@@ -12,7 +12,8 @@ router.route("/register").post(
             maxCount: 1
         },
         {
-            name: "coverimage",
+            name: "coverImage", //my this name was wrong in frontend coming data and on this multer!! 
+            //keep the name of all the variables same at any cost! across frontend and backend have a naming consistency! ft jyega ni toh! 
             maxCount: 1
         }
     ]),
