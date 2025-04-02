@@ -7,6 +7,21 @@ import { ApiResponse } from "../utils/ApiResponse.js"
 //in this there is one error we did because of which it is showing k user exist! but its not toh because we didnt used await for few statements jo db se baat kr rhe the 
 //always remember db is in another continent! 
 
+const generateAccessAndRefreshTokens = async (userId) => {
+    try {
+        const user = await User.findById(userId)
+        const accessToken = user.generateAccessToken
+        const refreshToken = user.generateRefreshToken
+
+        user.refreshToken = refreshToken
+        user.save({validateBeforeSave: false})
+
+        return {accessToken, refreshToken}
+    } catch (error) {
+        throw new ApiError(500, "something went wrong while generating refresh and access topken ")
+    }
+}
+
 const registerUser = asyncHandler(async(req, res) => {
     //when registering a user take its name,contact, and other basic details! i.e frontend 
     //store those details 
@@ -88,4 +103,89 @@ const registerUser = asyncHandler(async(req, res) => {
 
 })
 
-export {registerUser} //all these things are imprted in app! 
+const loginUser = asyncHandler(async(req, res) => {
+    //take username and pswd from user 
+    //check if username exist already 
+    //if username exist then check if pswd is same as username ka pswd
+    //if match then generate access token and refresh token! 
+    //send these tokens through cookies! 
+
+    const {email, username, password} = req.body
+
+    if (!username || !email){
+        throw new ApiError(400, "username and password is required")
+    }
+
+    const user = User.findOne({
+        $or: [{username}, {email}] //we will search for one! 
+    })
+
+    if (!user){
+        throw new ApiError(404, "user not found!")
+    }
+
+    const isPasswordValid = await user.isPasswordCorrect(password)  //dont use User ye mongoose ka methods hai! 
+
+    if (!isPasswordValid){
+        throw new ApiError(401, "invalid user credentials")
+    }
+    const {accessToken, refreshToken} = await generateAccessAndRefreshTokens(user._id) //dikhra hai k time lg skta hai toh await krdo! 
+
+    //now here we will have to check k user ko db ko call krna again feasible hai ya ni hai! if ni hai toh yahi pe ek constant bna k krdo solve easy!
+    const loggedInUser = await User.findById(user._id).select("-password -refreshToken") 
+
+    const options = {
+        httpOnly: true,
+        secure: true
+    }
+
+    return res
+    .status(200)
+    .cookie("accessToken", accessToken,options)
+    .cookie("refreshToken", refreshToken, options)
+    .json(
+        new ApiResponse(
+            200,
+            {
+                user: loggedInUser, accessToken, refreshToken
+            },
+            "user logged in"
+        ) //now we are sending again in json since we want user to let stor in locak system or what if applictaion banara ho toh then!  
+    )
+})
+
+//now for logout user all we need is to del cookiew=s and vo refreshtoken change krna 
+const logoutUser = asyncHandler(async(req,res) => {
+    //we can use same the concept of middleware 
+    //routes ko jake middleware lagaya and app pe cookie lagaya so we will design our middleware ab for logout 
+    //same multer types
+    User.findByIdAndUpdate(
+        req.user._id,
+        {
+            $set: {
+                refreshToken: undefined,
+            }
+        },
+        {
+            new: true
+        }
+    )
+
+    const options = {
+        httpOnly: true,
+        secure: true
+    }
+
+    return res
+    .status(200)
+    .clearCookie("accessToken", options)
+    .clearCookie("refreshToken", options)
+    .json(new ApiResponse(200, {}, "User Logged out"))
+    
+}) 
+
+export {
+    registerUser,
+    loginUser,
+    logoutUser
+} //all these things are imprted in app! 
