@@ -305,7 +305,7 @@ const updateUserAvatar = asyncHandler(async(req, res) => {
         new ApiResponse(200, user, "avatar image updates successfully")
     )
 })
-
+//todo: delete old avatar! 
 const updateUserCoverImage = asyncHandler(async(req, res) => {
     const coverImageLocalPath = req.file?.path //multer middleware k through
 
@@ -336,6 +336,78 @@ const updateUserCoverImage = asyncHandler(async(req, res) => {
     )
 })
 
+const getUserChannelProfile = asyncHandler(async(req, res) => {
+    const {username} = req.params
+
+    if (!username?.trim()){
+        throw new ApiError(400, "username is missing")
+    }
+
+    const channel = await User.aggregate([
+        {
+            $match: {
+                username: username?.toLowerCase()
+            }
+        },
+        {
+            $lookup:{
+                from: "Subscriptions",
+                localField: "_id",
+                foreignField: "channel",
+                as: "subscribers"
+            }
+        },
+        {
+            $lookup:{
+                from: "Subscriptions",
+                localField: "_id",
+                foreignField: "subscriber",
+                as: "subscribedTo"
+            }
+        },
+        {
+            $addFields: {
+                subscriberCount: {
+                    $size: "$subscribers"
+                },
+                channelsSubscribedToCount: {
+                    $size: "$subscribedTo"
+                },
+                isSubscribed: {
+                    $cond: {
+                        if:{$in: [req.user?._id, "$subscribers.subscriber"]},
+                        then: true,
+                        else: false
+                    }
+                },
+            }
+        },
+        //in the below pipeline we are doing projection that is just giving selected things!
+        {
+            $project: {
+                fullName: 1,
+                username: 1,
+                subscriberCount: 1,
+                channelsSubscribedToCount: 1,
+                isSubscribed: 1,
+                avatar: 1,
+                coverImage: 1,
+                email: 1
+            }
+        }
+    ]) //can see by console log what all is returned!
+
+    if (!channel?.length){
+        throw new ApiError(404, "channel does not exists")
+    }
+
+    return res
+    .status(200)
+    .json(
+        new ApiResponse(200, channel[0], "User channel fetched successfully")
+    )
+}) //here we have written pipelines for each thing like these {} are pipelines only in ([]) so all the lookups and all are pipelines! 
+
 export {
     registerUser,
     loginUser,
@@ -345,4 +417,5 @@ export {
     getCurrentUser,
     updateAccountDetails,
     updateUserAvatar,
+    updateUserCoverImage
 } //all these things are imprted in app! 
