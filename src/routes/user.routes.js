@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { loginUser, logoutUser, registerUser } from "../controllers/user.controller.js"; //use this js sometimes causes error! 
+import { loginUser, logoutUser, registerUser,refreshAccessToken } from "../controllers/user.controller.js"; //use this js sometimes causes error! 
 import { upload } from "../middlewares/multer.middleware.js"; //middleware is jatae huae milke jana 
 import { verifyJWT } from "../middlewares/auth.middleware.js";
 
@@ -28,5 +28,6 @@ router.route("/login").post(loginUser)
 
 //secured routed
 router.route("/logout").post(verifyJWT, logoutUser)
+router.route("/refresh-token").post(refreshAccessToken)
 
 export default router  //if exported as default then can import as different name also! 
